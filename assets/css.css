@@ -1,9 +1,10 @@
-html, body {
+html {
     height: 100%;
-    overflow: hidden;
+    overflow-y: auto;
 }
 body {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
 }

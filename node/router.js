@@ -1,6 +1,6 @@
 const multiparty = require("multiparty");
 const path = require("path");
-const { download, handleUpload, $STATIC } = require("./utils/index");
+const { download, handleUpload, $STATIC, handleMarkdown } = require("./utils/index");
 
 const METHODS = ["get", "post", "delete", "head", "put", "options", "patch"];
 
@@ -85,13 +85,24 @@ router.options(
 );
 
 router.get("/", function(req, res) {
-	setTimeout(() => {
-		res.end("<h1>Server</h1>");
-	}, 10000);
-	// res.end('<h1>Server</h1>');
+	res.end('<h1>Server</h1>');
 });
 
-router.get("/csv", function(req, res) {
+router.get("/article", async function (req, res) {
+	try {
+		const data = await handleMarkdown();
+		res.setHeader(
+			'Content-Type',
+			'text/html'
+		);
+		res.end(data);
+	} catch (e) {
+		console.log(e);
+		res.end();
+	}
+});
+
+router.get("/csv", function (req, res) {
 	const file_path = path.join($STATIC, "test.csv");
 	download(file_path, res);
 });

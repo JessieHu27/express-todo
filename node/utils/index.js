@@ -1,6 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 const stream = require('stream');
+const marked = require("marked");
+const hljs = require("highlight.js");
+
 
 // static path
 exports.$STATIC = path.join(__dirname, '../static');
@@ -50,3 +53,34 @@ exports.handleUpload = function(buffer, filename) {
         bufferStream.pipe(writer);
     });
 };
+
+/**
+ * parse MD file and hilight the code block
+ */
+exports.handleMarkdown = function(params) {
+	const ARTICLE_PATH = path.join(__dirname, '../static/note.md')
+	const reader = fs.createReadStream(ARTICLE_PATH, { encoding: "utf-8" });
+	return new Promise((resolve, reject) => {
+		let str = "";
+		reader.on("data", (chunk) => {
+			str += chunk;
+		});
+		reader.on("end", (err, data) => {
+			if (err) {
+				reject(err);
+				return;
+			}
+			try {
+				marked.setOptions({
+					highlight: function(code, language) {
+						return hljs.highlight('javascript', code).value;
+					},
+				});
+				resolve(marked(str));
+			} catch (e) {
+				reject(e);
+			}
+		});
+	});
+};
+

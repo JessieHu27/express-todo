@@ -56,7 +56,7 @@ function ajax(method, url, data = null, config = {}) {
 				withCredentials = false,
 				upload = false,
 				progress = handleProgress,
-				responseType = "blob",
+				responseType = "text/html",
 			} = config;
 			xhr.responseType = responseType;
 			xhr.timeout = timeout;
@@ -93,9 +93,9 @@ function ajax(method, url, data = null, config = {}) {
  * @param {String} ext 
  */
 function fetch_(ext) {
-	fetch(SERVER + ext)
-		.then((res) => res.blob())
-		.then((blob) => a_download(blob, ext));
+	fetch(SERVER + ext).
+		then((res) => res.blob()).
+		then((blob) => a_download(blob, ext));
 }
 
 function handleProgress(e) {
@@ -159,14 +159,13 @@ function fetchBinaryUpload(target) {
 				},
 				mode: "cors",
 				// credentials:'include'
-			})
-				.then((res) => {
+			}).
+				then((res) => {
 					resolve();
 					console.log(res);
-				})
-				.catch((err) => reject(err));
+				}).
+				catch((err) => reject(err));
 		};
 	});
 }
-
 

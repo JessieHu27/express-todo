@@ -1,14 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>app</title>
-    <link rel="stylesheet" href="./assets/css.css" />
-    <link rel="icon" href="./favicon.ico" />
-    <script src="./utils/index.js"></script>
-</head>
-<body>
-    <input onchange="ajaxFormdataUpload(this)" type="file" />
-</body>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>app</title>
+		<link rel="stylesheet" href="./assets/css.css" />
+		<link rel="icon" href="./favicon.ico" />
+		<link
+			rel="stylesheet"
+			href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.0/styles/default.min.css"
+		/>
+		<script src="./utils/index.js"></script>
+	</head>
+	<body>
+		<input onchange="ajaxFormdataUpload(this)" type="file" />
+		<article id="article"></article>
+	</body>
+	<script>
+		document.addEventListener("DOMContentLoaded", () => {
+			ajax("GET", `${SERVER}article`, null).then((res) => {
+				// TODO need DOM filter to prevent XSS attack
+				document.querySelector("#article").innerHTML = res;
+			});
+		});
+	</script>
 </html>

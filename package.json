@@ -12,7 +12,10 @@
     "url": "git+https://github.com/jessiehu27/express-todo.git"
   },
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "highlight.js": "^10.0.2",
+    "marked": "^1.0.0",
+    "multiparty": "^4.2.1"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.3",
