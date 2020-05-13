@@ -11,17 +11,20 @@
 			href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.0/styles/default.min.css"
 		/>
 		<script src="./utils/index.js"></script>
+		<script src="./utils/upload.js"></script>
+		<script src="./utils/spark-md5.min.js"></script>
 	</head>
 	<body>
-		<input onchange="ajaxFormdataUpload(this)" type="file" />
-		<article id="article"></article>
+        <p>
+            <span>小文件上传：</span>
+            <input onchange="ajaxFormdataUpload(this)" type="file" />
+        </p>
+        <p>
+            <span>大文件上传：</span>
+            <input onchange="bigFileUpload(this)" type="file" />
+        </p>
 	</body>
 	<script>
-		document.addEventListener("DOMContentLoaded", () => {
-			ajax("GET", `${SERVER}article`, null).then((res) => {
-				// TODO need DOM filter to prevent XSS attack
-				document.querySelector("#article").innerHTML = res;
-			});
-		});
+		
 	</script>
 </html>

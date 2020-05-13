@@ -88,6 +88,10 @@ function ajax(method, url, data = null, config = {}) {
 	});
 }
 
+ajax.XhrInstance = function () {
+	this.xhr = null;
+};
+
 /**
  * fetch 
  * @param {String} ext 
