@@ -15,16 +15,42 @@
 		<script src="./utils/spark-md5.min.js"></script>
 	</head>
 	<body>
-        <p>
-            <span>小文件上传：</span>
-            <input onchange="ajaxFormdataUpload(this)" type="file" />
-        </p>
-        <p>
-            <span>大文件上传：</span>
+		<main>
+			<span>小文件上传：</span>
+			<input onchange="ajaxFormdataUpload(this)" type="file" />
+		</main>
+		<main>
+			<span>大文件上传：</span>
             <input onchange="bigFileUpload(this)" type="file" />
-        </p>
+            <progress id="progress" max="100" value="0"></progress>
+            <span id="percentage">0%</span>
+            <button id="pause" class="button-pause" type="button">PAUSE</button>
+            <button id="start" class="button-start" type="button">START</button>
+            <button id="resume" class="button-pause" type="button">RESUME</button>
+        </main>
 	</body>
 	<script>
-		
+        let F;
+        const progress = document.querySelector('#progress')
+        const percentage = document.querySelector('#percentage')
+        const bt1 = document.querySelector('#pause')
+        const bt2 = document.querySelector('#start')
+        const bt3 = document.querySelector('#resume')
+		function bigFileUpload(target) {
+			F = new BigFileUpload(target.files[0], {
+                onProgress: (load, total) => {
+                    const percent = (load * 100 / total).toFixed(0)
+                    progress.setAttribute('value', percent)
+                    percentage.innerText = `${percent}%`
+                }
+            });
+        }
+        bt1.addEventListener('click', (e) => {
+            F.stop()
+        })
+        bt2.addEventListener('click', () => {
+            F.start()
+        })
+       
 	</script>
 </html>

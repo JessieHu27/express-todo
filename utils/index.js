@@ -56,12 +56,15 @@ function ajax(method, url, data = null, config = {}) {
 				withCredentials = false,
 				upload = false,
 				progress = handleProgress,
-				responseType = "text/html",
+				responseType = "text",
+				xhrInstance = null
 			} = config;
 			xhr.responseType = responseType;
 			xhr.timeout = timeout;
 			xhr.withCredentials = withCredentials;
-
+			if (xhrInstance) {
+				xhrInstance.xhr = xhr;
+			}
 			upload
 				? (xhr.upload.onprogress = progress)
 				: (xhr.onprogress = progress);
@@ -104,7 +107,7 @@ function fetch_(ext) {
 
 function handleProgress(e) {
 	const { total, loaded } = e;
-	console.log(loaded, total, ((loaded * 100) / total).toFixed(0) + "%");
+	// console.log(loaded, total, ((loaded * 100) / total).toFixed(0) + "%");
 }
 
 /**
@@ -123,6 +126,7 @@ function ajaxFormdataUpload(target) {
 	ajax("POST", `${SERVER}upload`, form, {
 		upload: true,
 		headers: {},
+		xhrInstance: null
 	}).then((res) => console.log(res));
 }
 

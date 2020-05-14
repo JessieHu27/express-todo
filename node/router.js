@@ -1,6 +1,12 @@
 const multiparty = require("multiparty");
 const path = require("path");
-const { download, handleUpload, $STATIC, handleMarkdown } = require("./utils/index");
+const {
+	download,
+	handleUpload,
+	$STATIC,
+	mergeFileChunk,
+	handleMarkdown,
+} = require("./utils/index");
 
 const METHODS = ["get", "post", "delete", "head", "put", "options", "patch"];
 
@@ -23,7 +29,7 @@ function Router() {
 }
 
 METHODS.forEach((v) => {
-	Router.prototype[v] = function(url, handle, exact = true) {
+	Router.prototype[v] = function (url, handle, exact = true) {
 		if (this.registeredRequest[v].hasOwnProperty(url)) {
 			console.warn(`request ${url} is already registered!`);
 		}
@@ -76,7 +82,7 @@ const router = new Router();
 
 router.options(
 	"/",
-	function(req, res) {
+	function (req, res) {
 		res.setHeader("Access-Control-Max-Age", 60000);
 		res.statusCode = 200;
 		res.end();
@@ -84,17 +90,14 @@ router.options(
 	false
 );
 
-router.get("/", function(req, res) {
-	res.end('<h1>Server</h1>');
+router.get("/", function (req, res) {
+	res.end("<h1>Server</h1>");
 });
 
 router.get("/article", async function (req, res) {
 	try {
 		const data = await handleMarkdown();
-		res.setHeader(
-			'Content-Type',
-			'text/html'
-		);
+		res.setHeader("Content-Type", "text/html");
 		res.end(data);
 	} catch (e) {
 		console.log(e);
@@ -107,32 +110,32 @@ router.get("/csv", function (req, res) {
 	download(file_path, res);
 });
 
-router.get("/xlsx", function(req, res) {
+router.get("/xlsx", function (req, res) {
 	const file_path = path.join($STATIC, "test.xlsx");
 	download(file_path, res);
 });
 
-router.get("/pdf", function(req, res) {
+router.get("/pdf", function (req, res) {
 	const file_path = path.join($STATIC, "test.pdf");
 	download(file_path, res);
 });
 
-router.get("/docx", function(req, res) {
+router.get("/docx", function (req, res) {
 	const file_path = path.join($STATIC, "test.docx");
 	download(file_path, res);
 });
 
-router.get("/png", function(req, res) {
+router.get("/png", function (req, res) {
 	const file_path = path.join($STATIC, "test.png");
 	download(file_path, res);
 });
 
-router.get("/sketch", function(req, res) {
+router.get("/sketch", function (req, res) {
 	const file_path = path.join($STATIC, "test.sketch");
 	download(file_path, res);
 });
 
-router.post("/upload", function(req, res) {
+router.post("/upload", function (req, res) {
 	const mp = new multiparty.Form();
 	mp.parse(req, (err, field, files) => {
 		console.log(err);
@@ -142,7 +145,24 @@ router.post("/upload", function(req, res) {
 	});
 });
 
-router.post("/upload-single", function(req, res) {
+router.post("/upload-merge", function (req, res) {
+	let data = "";
+	// 接收的是buffer，可以通过Buffer.concat([buffer1, buffer2,...], totalLength)进行合并
+	req.on("data", (chunk) => {
+		data += chunk.toString();
+	});
+	req.on("end", (err) => {
+		if (err) {
+			res.statusCode = 500;
+			res.end("");
+			return;
+		}
+		data = JSON.parse(data);
+		mergeFileChunk(data, res);
+	});
+});
+
+router.post("/upload-single", function (req, res) {
 	let body = [];
 	req.on("data", (chunk) => {
 		body = body.concat(chunk);
@@ -168,23 +188,8 @@ router.post("/upload-single", function(req, res) {
 	});
 });
 
-router.post("/test/text", (req, res) => {
-	res.end("text test");
-});
-
-router.post("/test/json", (req, res) => {
-	res.end(
-		JSON.stringify({
-			data: { json: "json test" },
-			msg: "it works",
-			code: 201,
-		})
-	);
-});
-
-router.post("/test/blob", (req, res) => {
-	const blob = Buffer.from("123");
-	res.end(blob);
+router.post("/upload-extra", function (req, res) {
+	res.end("111");
 });
 
 module.exports = router;

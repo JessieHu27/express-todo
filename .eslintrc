@@ -443,7 +443,7 @@
     "no-lonely-if": 0,
 
     // 禁止 for (var i) { function() { use i } }，使用 let 则可以
-    "no-loop-func": 2,
+    "no-loop-func": 0,
 
     // 禁止魔法数字
     "no-magic-numbers": 0,
