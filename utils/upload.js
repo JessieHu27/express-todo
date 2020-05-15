@@ -15,7 +15,7 @@ const DEFAULT_CONFIG = {
 	/**
 	 * 切片大小，默认1M
 	 */
-	chunkSize: 1024 * 1024,
+	chunkSize: 1024 * 1024 * 10,
 	/**
 	 * 并发请求
 	 * */
@@ -43,7 +43,9 @@ class BigFileUpload {
 
 		this.reader = new FileReader();
 
-		this.fileName = file.name;
+        this.fileName = file.name;
+        
+        this.ext = getFileExt(this.fileName);
 
 		this.uploadedSize = 0;
 
@@ -260,6 +262,7 @@ class BigFileUpload {
 		fm.append("index", index);
 		fm.append("total", this.fileSliceCount);
 		fm.append("hash", this.hash);
+		fm.append("ext", this.ext);
 		fm.append("chunk", chunk);
 		const inst = new ajax.XhrInstance();
 		const request = () => {
@@ -322,7 +325,8 @@ class BigFileUpload {
 			"POST",
 			`${SERVER}upload-merge`,
 			JSON.stringify({
-				hash: this.hash,
+                hash: this.hash,
+                ext: this.ext,
 				total: this.fileSliceCount,
 			}),
 			{
@@ -334,4 +338,13 @@ class BigFileUpload {
 			}
 		);
 	}
+}
+
+
+function getFileExt(name) {
+    const index = name.lastIndexOf('.');
+    if (index > -1) {
+        return name.slice(index);
+    }
+    return '';
 }

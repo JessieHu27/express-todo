@@ -5,6 +5,7 @@ const {
 	handleUpload,
 	$STATIC,
 	mergeFileChunk,
+	fileChunkSave,
 	handleMarkdown,
 } = require("./utils/index");
 
@@ -136,16 +137,23 @@ router.get("/sketch", function (req, res) {
 });
 
 router.post("/upload", function (req, res) {
+	res.setHeader('Content-Type', 'application/json;charset=utf-8');
 	const mp = new multiparty.Form();
 	mp.parse(req, (err, field, files) => {
-		console.log(err);
-		console.log(field);
-		console.log(files);
-		res.end();
+		if (err) {
+			res.end(JSON.stringify({
+				code: 200,
+				msg: '文件解析错误',
+				data: ''
+			}));
+			return;
+		}
+		fileChunkSave(field, files, res);
 	});
 });
 
 router.post("/upload-merge", function (req, res) {
+	res.setHeader('Content-Type', 'application/json;charset=utf-8');
 	let data = "";
 	// 接收的是buffer，可以通过Buffer.concat([buffer1, buffer2,...], totalLength)进行合并
 	req.on("data", (chunk) => {
